@@ -5,9 +5,7 @@ window.PRODUCTS = [
     price: 510000,
     image: './assets/images/FPANNA-LEIGH-WATERS_SIGNATUREA16WH.webp',
     images: [
-      './assets/images/FPANNA-LEIGH-WATERS_SIGNATUREA16WH.webp',
-      './assets/images/FPANNA-LEIGH-WATERS_SIGNATUREA16WH1.webp',
-      './assets/images/FPANNA-LEIGH-WATERS_SIGNATUREA16WH2.webp'
+      './assets/images/FPANNA-LEIGH-WATERS_SIGNATUREA16WH.webp'
     ],
     featured: true,
     special: true,
