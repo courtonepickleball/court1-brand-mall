@@ -165,7 +165,7 @@ function nextProductImage(productId) {
   if (img) img.src = product.images[currentImageIndex[productId]];
 }
 
-/* ===== 상품 카드 렌더링 ===== */
+/* ===== 상품 카드 렌더링 (id 오버레이) ===== */
 
 function renderProducts() {
   if (!grid) return;
@@ -173,6 +173,7 @@ function renderProducts() {
   grid.innerHTML = list.map(product => `
     <article class="product-card ${product.featured ? 'is-featured' : ''} ${product.special ? 'is-special' : ''}">
       <div class="product-media">
+        <div class="card-id-overlay">${product.id}</div>
         <img
           class="product-image"
           data-product-id="${product.id}"
@@ -184,7 +185,6 @@ function renderProducts() {
           : ''}
       </div>
       <div class="product-body">
-        <div class="card-id">${product.id}</div>
         <div class="product-name">${product.name}</div>
         <div class="price-main">${formatPrice(product.price)}</div>
         ${renderBadges(product)}
@@ -244,7 +244,6 @@ function addItem(id) {
       name: product.name,
       qty: 1,
       price: product.price,
-      // 배지는 장바구니/이메일에서도 동일하게 쓰고 싶으면 유지
       featured: product.featured,
       special: product.special
     });
@@ -513,7 +512,6 @@ orderForm?.addEventListener('submit', event => {
   ];
 
   cart.forEach(item => {
-    // id, image URL, name, qty, price 순서가 보이도록 구성
     lines.push(`- ID: ${item.id}`);
     lines.push(`  Image: ${new URL(item.image, location.href).href}`);
     lines.push(`  Name: ${item.name}`);

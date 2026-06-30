@@ -257,17 +257,28 @@ section.panel-card.cart-section,
   font-size: 12px;
 }
 
+/* 이미지 위에 작게 표시되는 상품 ID */
+.card-id-overlay{
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.65);
+  color: #ccd3e4;
+  max-width: 80%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .product-body {
   display: flex;
   flex-direction: column;
   gap: 10px;
   padding: 12px;
   flex: 1;
-}
-
-.card-id {
-  font-size: 10px;
-  opacity: .65;
 }
 
 .product-name {
@@ -279,7 +290,8 @@ section.panel-card.cart-section,
   overflow-wrap: break-word;
   word-break: keep-all;
   display: block;
-  max-height: calc(1.28em * 6); /* 최대 6줄 */
+  min-height: calc(1.28em * 6);  /* 항상 6줄 공간 확보 */
+  max-height: calc(1.28em * 6);
   overflow: hidden;
 }
 
@@ -638,7 +650,7 @@ body.ready .page-wrap {
   }
 
   .badge-row {
-    justify-content: flex-start;
+    justify-content: flex-start; /* wrap 없음: 항상 한 줄 */
   }
 
   .inline-radios {
