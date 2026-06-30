@@ -141,9 +141,10 @@ function validateCode() {
 
 function renderBadges(item) {
   const badges = [];
-  if (item.featured) badges.push(`<span class="badge badge-featured">코트원 추천</span>`);
-  if (item.special) badges.push(`<span class="badge badge-special">코드 할인</span>`);
-  return badges.length ? `<div class="badge-row">${badges.join('')}</div>` : '';
+  if (item.featured) badges.push('<span class="badge badge-featured">코트원 추천</span>');
+  if (item.special) badges.push('<span class="badge badge-special">코드 할인</span>');
+  // 항상 badge-row를 반환해서 빈칸도 유지
+  return `<div class="badge-row">${badges.join('')}</div>`;
 }
 
 function getDisplayImage(product) {
@@ -164,30 +165,36 @@ function nextProductImage(productId) {
   if (img) img.src = product.images[currentImageIndex[productId]];
 }
 
-function renderVisibleProducts(list) {
+/* ===== 상품 카드 렌더링 ===== */
+
+function renderProducts() {
   if (!grid) return;
-  const target = Array.isArray(list) && list.length ? list : products;
-  grid.innerHTML = target.map(product => `
+  const list = getVisibleProducts();
+  grid.innerHTML = list.map(product => `
     <article class="product-card ${product.featured ? 'is-featured' : ''} ${product.special ? 'is-special' : ''}">
       <div class="product-media">
-        <img class="product-image" data-product-id="${product.id}" src="${getDisplayImage(product)}" alt="${product.name}">
-        ${hasMultipleImages(product) ? `<button type="button" class="img-switch-btn" data-switch="${product.id}">이미지 변경</button>` : ''}
+        <img
+          class="product-image"
+          data-product-id="${product.id}"
+          src="${getDisplayImage(product)}"
+          alt="${product.name}"
+        >
+        ${hasMultipleImages(product)
+          ? `<button type="button" class="img-switch-btn" data-switch="${product.id}">이미지 변경</button>`
+          : ''}
       </div>
       <div class="product-body">
+        <div class="card-id">${product.id}</div>
         <div class="product-name">${product.name}</div>
-        <div class="product-meta-row">
-          <div class="price-main">${formatPrice(product.price)}</div>
-          ${renderBadges(product)}
-        </div>
+        <div class="price-main">${formatPrice(product.price)}</div>
+        ${renderBadges(product)}
         <button class="add-btn" data-id="${product.id}">담기</button>
       </div>
     </article>
   `).join('');
 }
 
-function renderProducts() {
-  renderVisibleProducts(getVisibleProducts());
-}
+/* ===== 장바구니 렌더링 ===== */
 
 function renderCart() {
   if (!cartList) return;
@@ -199,8 +206,8 @@ function renderCart() {
       <div class="cart-item">
         <div>
           <div class="name">${item.name}</div>
+          <div class="meta">${item.id}</div>
           ${renderBadges(item)}
-          <div class="meta">${item.id} · ${formatPrice(item.price)}</div>
         </div>
         <div class="meta">${formatPrice(item.price)}</div>
         <div class="qty-wrap">
@@ -219,21 +226,25 @@ function renderCart() {
   saveCart();
 }
 
+/* ===== 장바구니 조작 ===== */
+
 function addItem(id) {
   if (!requireMode()) return;
   const product = products.find(item => item.id === id);
   if (!product) return;
 
   const found = cart.find(item => item.id === id);
-  if (found) found.qty += 1;
-  else {
+
+  if (found) {
+    found.qty += 1;
+  } else {
     cart.push({
       id: product.id,
+      image: product.image,
       name: product.name,
       qty: 1,
       price: product.price,
-      image: product.image,
-      images: product.images,
+      // 배지는 장바구니/이메일에서도 동일하게 쓰고 싶으면 유지
       featured: product.featured,
       special: product.special
     });
@@ -254,6 +265,8 @@ function changeQty(id, delta) {
 
   renderCart();
 }
+
+/* ===== 주문/코드 상태 ===== */
 
 function renderOrderInfo() {
   if (!orderCodeInfo) return;
@@ -279,7 +292,7 @@ function syncAddressUI() {
 }
 
 function applyFilters() {
-  renderVisibleProducts(getVisibleProducts());
+  renderProducts();
   updateFilterButtons();
 }
 
@@ -291,7 +304,7 @@ function showAllProducts() {
   const defaultSort = document.querySelector('input[name="sortType"][value="default"]');
   if (defaultSort) defaultSort.checked = true;
   updateFilterButtons();
-  renderVisibleProducts(products);
+  renderProducts();
 }
 
 function initFilters() {
@@ -327,6 +340,8 @@ function resetOrderState() {
   renderCart();
 }
 
+/* ===== 스플래시 ===== */
+
 function initSplash() {
   const splash = document.getElementById('splashScreen');
   const logo = document.getElementById('splashLogo');
@@ -350,6 +365,8 @@ function initSplash() {
     document.body.classList.add('ready');
   }, 4200);
 }
+
+/* ===== 이벤트 바인딩 ===== */
 
 checkCodeBtn?.addEventListener('click', () => {
   codeMode = 'code';
@@ -446,6 +463,8 @@ clearCartBtn?.addEventListener('click', () => {
   renderCart();
 });
 
+/* ===== 주문(이메일) ===== */
+
 orderForm?.addEventListener('submit', event => {
   event.preventDefault();
 
@@ -494,10 +513,15 @@ orderForm?.addEventListener('submit', event => {
   ];
 
   cart.forEach(item => {
-    lines.push(`- ${item.name} (${item.id}) x ${item.qty} / ${formatPrice(item.price * item.qty)}`);
+    // id, image URL, name, qty, price 순서가 보이도록 구성
+    lines.push(`- ID: ${item.id}`);
+    lines.push(`  Image: ${new URL(item.image, location.href).href}`);
+    lines.push(`  Name: ${item.name}`);
+    lines.push(`  Qty: ${item.qty}`);
+    lines.push(`  Price: ${formatPrice(item.price * item.qty)}`);
+    lines.push('');
   });
 
-  lines.push('');
   lines.push(`합계: ${formatPrice(getTotal())}`);
 
   if (memo) {
@@ -513,6 +537,8 @@ orderForm?.addEventListener('submit', event => {
     resetOrderState();
   }, 200);
 });
+
+/* ===== 초기화 ===== */
 
 initFilters();
 renderProducts();

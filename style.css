@@ -201,6 +201,8 @@ section.panel-card.cart-section,
   gap: 14px;
 }
 
+/* ===== 상품 카드 영역 (최종본) ===== */
+
 .product-card {
   background:
     linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.012)),
@@ -263,17 +265,22 @@ section.panel-card.cart-section,
   flex: 1;
 }
 
+.card-id {
+  font-size: 10px;
+  opacity: .65;
+}
+
 .product-name {
   color: #fff;
   font-size: 14px;
   line-height: 1.28;
   font-weight: 700;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+  display: block;
+  max-height: calc(1.28em * 6); /* 최대 6줄 */
   overflow: hidden;
-  min-height: calc(1.28em * 4);
 }
 
 .product-meta-row {
@@ -294,9 +301,10 @@ section.panel-card.cart-section,
 .badge-row {
   display: flex;
   gap: 6px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;        /* 항상 한 줄 */
   align-items: center;
   justify-content: flex-end;
+  min-height: 22px;         /* 배지가 없어도 1줄 공간 유지 */
 }
 
 .badge {
@@ -369,6 +377,8 @@ section.panel-card.cart-section,
       0 0 26px rgba(232,176,74,.45);
   }
 }
+
+/* ===== 장바구니 / 폼 ===== */
 
 section.panel-card.cart-section h2 {
   margin: 0 0 12px;
@@ -526,6 +536,8 @@ section.panel-card.cart-section h2 {
   font-size: 13px;
 }
 
+/* ===== 스플래시 ===== */
+
 .splash-screen {
   position: fixed;
   inset: 0;
@@ -593,6 +605,8 @@ body.ready .page-wrap {
   }
 }
 
+/* ===== 반응형 ===== */
+
 @media (max-width: 1100px) {
   .product-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -625,7 +639,6 @@ body.ready .page-wrap {
 
   .badge-row {
     justify-content: flex-start;
-    flex-wrap: wrap;
   }
 
   .inline-radios {
